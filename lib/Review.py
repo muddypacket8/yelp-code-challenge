@@ -1,16 +1,21 @@
-from sqlalchemy import Column, Integer, ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+class Review:
+    all_reviews = []
 
-Base = declarative_base()
+    def __init__(self, customer, restaurant, rating):
+        self._customer = customer
+        self._restaurant = restaurant
+        self._rating = rating
+        Review.all_reviews.append(self)
 
+    def rating(self):
+        return self._rating
 
-class Review(Base):
-    __tablename__ = 'review'
-    id = Column(Integer, primary_key=True)
-    customer_id = Column(Integer, ForeignKey('customer.id'))
-    restaurant_id = Column(Integer, ForeignKey('restaurant.id'))
-    rating = Column(Integer)
+    @classmethod
+    def all(cls):
+        return cls.all_reviews
 
-    customer = relationship('Customer', back_populates='reviews')
-    restaurant = relationship('Restaurant', back_populates='reviews')
+    def customer(self):
+        return self._customer
+
+    def restaurant(self):
+        return self._restaurant

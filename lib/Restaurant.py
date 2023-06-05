@@ -1,23 +1,27 @@
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+class Restaurant:
+    def __init__(self, name):
+        self._name = name
+        self._reviews = []
 
-Base = declarative_base()
+    def name(self):
+        return self._name
 
-
-class Restaurant(Base):
-    __tablename__ = 'restaurant'
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-
-    reviews = relationship('Review', back_populates='restaurant')
-
-    def average_star_rating(self):
-        if not self.reviews:
-            return 0
-
-        total_rating = sum(review.rating for review in self.reviews)
-        return total_rating / len(self.reviews)
+    def reviews(self):
+        return self._reviews
 
     def customers(self):
-        return list(set([review.customer for review in self.reviews]))
+        unique_customers = set()
+        for review in self._reviews:
+            unique_customers.add(review.customer())
+        return list(unique_customers)
+
+    def average_star_rating(self):
+        total_ratings = sum(review.rating() for review in self._reviews)
+        num_reviews = len(self._reviews)
+        if num_reviews > 0:
+            return total_ratings / num_reviews
+        else:
+            return 0.0
+
+    def add_review(self, review):
+        self._reviews.append(review)
